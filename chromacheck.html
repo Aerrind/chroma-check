@@ -658,6 +658,98 @@
     z-index: 10;
   }
   [data-tip]:hover::after { opacity: 1; }
+
+  /* Emotional Analysis */
+  .emotion-gauge {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .emotion-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-family: 'Outfit', sans-serif;
+    border: 1px solid;
+    background: rgba(184, 169, 255, 0.08);
+    color: var(--accent);
+    border-color: var(--accent);
+    margin: 2px;
+    animation: fadeIn 0.3s ease;
+  }
+  .emotion-descriptor {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .emotion-descriptor strong { color: var(--text); }
+  .emotion-scale {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    align-items: center;
+  }
+  .scale-label {
+    font-size: 0.65rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+  .scale-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .scale-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+  .color-emotions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .emotion-color-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .emotion-color-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .emotion-color-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .emotion-color-hex {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+  .emotion-color-words {
+    font-size: 0.75rem;
+    color: var(--text);
+  }
 </style>
 </head>
 <body>
@@ -726,6 +818,12 @@
     </div>
 
     <div class="results-grid">
+      <!-- Emotional Analysis -->
+      <div class="result-card fade-in">
+        <div class="card-title"><span class="card-icon">💭</span> Emotional Tone</div>
+        <div id="emotionalAnalysis"></div>
+      </div>
+
       <!-- Contrast Matrix -->
       <div class="result-card fade-in">
         <div class="card-title"><span class="card-icon">⬛</span> Contrast Matrix</div>
@@ -910,6 +1008,89 @@ function loadPreset(name){
   analyze();
 }
 
+// ───── EMOTION & PSYCHOLOGY ─────
+const emotionMap = {
+  // Hue-based emotions (0-360)
+  red: {range:[0,30],emotions:['passionate','energetic','urgent','bold'],descriptor:'Energetic & Passionate'},
+  orange: {range:[30,60],emotions:['playful','creative','friendly','optimistic'],descriptor:'Playful & Warm'},
+  yellow: {range:[60,90],emotions:['optimistic','joyful','attention-seeking','cautionary'],descriptor:'Cheerful & Optimistic'},
+  lime: {range:[90,150],emotions:['fresh','natural','healthy','growth'],descriptor:'Fresh & Natural'},
+  green: {range:[150,180],emotions:['calm','balanced','nature','trustworthy'],descriptor:'Calm & Balanced'},
+  cyan: {range:[180,210],emotions:['peaceful','clean','tech-forward','serene'],descriptor:'Cool & Serene'},
+  blue: {range:[210,260],emotions:['professional','trustworthy','calm','stable'],descriptor:'Professional & Trustworthy'},
+  purple: {range:[260,290],emotions:['creative','mysterious','luxurious','contemplative'],descriptor:'Creative & Mysterious'},
+  magenta: {range:[290,330],emotions:['playful','creative','bold','contemporary'],descriptor:'Bold & Creative'},
+};
+
+function getColorEmotion(hex) {
+  const h = hue(hex);
+  const s = saturation(hex);
+  const b = brightness(hex);
+  
+  let baseEmotion = emotionMap.red;
+  for(const [key, data] of Object.entries(emotionMap)) {
+    const [hMin, hMax] = data.range;
+    if(h >= hMin && h < hMax) {
+      baseEmotion = data;
+      break;
+    }
+  }
+  
+  let emotions = [...baseEmotion.emotions];
+  
+  // Adjust based on saturation
+  if(s < 15) emotions = ['subtle','sophisticated','neutral','muted'];
+  else if(s > 80) emotions = [...emotions.slice(0,2), 'vibrant', 'intense'];
+  
+  // Adjust based on brightness
+  if(b < 20) emotions = emotions.map(e => e === 'calm' ? 'dark & serious' : e);
+  else if(b < 40) emotions = [...emotions, 'serious'];
+  else if(b > 80) emotions = [...emotions, 'airy'];
+  
+  return {
+    descriptor: baseEmotion.descriptor,
+    emotions: emotions,
+    saturation: s,
+    brightness: b
+  };
+}
+
+function buildEmotionalProfile() {
+  const profiles = colors.map(c => getColorEmotion(c));
+  
+  // Calculate overall tone
+  const avgSat = profiles.reduce((a, p) => a + p.saturation, 0) / profiles.length;
+  const avgBright = profiles.reduce((a, p) => a + p.brightness, 0) / profiles.length;
+  
+  let dominantTone = '';
+  
+  if(avgSat < 25 && avgBright > 50) dominantTone = 'Soft & Sophisticated';
+  else if(avgSat < 25 && avgBright < 50) dominantTone = 'Dark & Minimal';
+  else if(avgSat > 65 && avgBright > 60) dominantTone = 'Vibrant & Energetic';
+  else if(avgSat > 65 && avgBright < 60) dominantTone = 'Deep & Rich';
+  else if(avgSat > 40 && avgBright > 70) dominantTone = 'Playful & Friendly';
+  else if(avgSat > 40 && avgBright < 40) dominantTone = 'Moody & Atmospheric';
+  else dominantTone = 'Balanced & Harmonious';
+  
+  // Emotional coherence: do emotions align?
+  const allEmotions = profiles.flatMap(p => p.emotions);
+  const emotionFreq = {};
+  allEmotions.forEach(e => emotionFreq[e] = (emotionFreq[e] || 0) + 1);
+  
+  // Find conflicting emotions
+  const hasPassionate = allEmotions.some(e => e.includes('energetic') || e.includes('passionate'));
+  const hasCalm = allEmotions.some(e => e.includes('calm') || e.includes('peaceful'));
+  const coherenceScore = hasPassionate && hasCalm ? 40 : Math.min(100, (Object.values(emotionFreq).length ** -0.5) * 80 + 60);
+  
+  return {
+    dominantTone,
+    profiles,
+    coherenceScore: Math.round(coherenceScore),
+    avgSaturation: Math.round(avgSat),
+    avgBrightness: Math.round(avgBright)
+  };
+}
+
 // ───── ANALYSIS ─────
 let currentAnalyzed = false;
 function analyze(silent=false){
@@ -931,6 +1112,7 @@ function runAnalysis(){
   buildRoleSelects();
   buildScore();
   buildHarmony();
+  buildEmotionalAnalysis();
   renderUIPreview();
   renderSimPreview();
   buildSuggestions();
@@ -1239,6 +1421,77 @@ function buildSuggestions(){
   document.getElementById('suggestions').innerHTML=sugs.map(s=>
     `<div class="suggestion"><span class="sug-icon">${s.icon}</span><div class="sug-text">${s.text}</div></div>`
   ).join('');
+}
+
+function buildEmotionalAnalysis(){
+  const profile = buildEmotionalProfile();
+  const {dominantTone, profiles, coherenceScore, avgSaturation, avgBrightness} = profile;
+  
+  // Build main emotional descriptor
+  let emotionalHTML = `
+    <div class="emotion-descriptor">
+      <strong>${dominantTone}</strong> · Your palette evokes a <strong>${avgSaturation > 50 ? 'vibrant' : avgSaturation > 30 ? 'balanced' : 'subtle'}</strong> mood with 
+      <strong>${avgBrightness > 60 ? 'bright, open' : avgBrightness > 40 ? 'balanced' : 'dark, rich'}</strong> tones.
+    </div>
+    
+    <div class="emotion-scale">
+      <span class="scale-label">Coherence</span>
+      <div class="scale-bar">
+        <div class="scale-fill" style="width:${coherenceScore}%;background:linear-gradient(90deg, #ff9eb5, #7ef7c4)"></div>
+      </div>
+      <span style="font-size:0.7rem;color:var(--muted);min-width:30px">${coherenceScore}/100</span>
+    </div>
+    
+    <div style="margin-top:16px">
+      <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Emotional tags</div>
+      <div>
+  `;
+  
+  // Collect unique emotions across palette
+  const uniqueEmotions = new Set();
+  profiles.forEach(p => p.emotions.forEach(e => uniqueEmotions.add(e)));
+  
+  const emotionGroups = {};
+  Array.from(uniqueEmotions).forEach(emotion => {
+    let color = '#b8a9ff';
+    if(emotion.includes('calm') || emotion.includes('peaceful') || emotion.includes('serene')) color = '#7ef7c4';
+    else if(emotion.includes('playful') || emotion.includes('joyful') || emotion.includes('friendly')) color = '#ff9eb5';
+    else if(emotion.includes('energetic') || emotion.includes('passionate') || emotion.includes('bold')) color = '#f87171';
+    else if(emotion.includes('professional') || emotion.includes('trustworthy') || emotion.includes('stable')) color = '#60a5fa';
+    else if(emotion.includes('creative') || emotion.includes('mysterious')) color = '#a78bfa';
+    
+    emotionGroups[emotion] = color;
+  });
+  
+  emotionalHTML += Array.from(emotionGroups).map(([emotion, color]) => 
+    `<span class="emotion-tag" style="background:${color}20;color:${color};border-color:${color};">${emotion}</span>`
+  ).join('');
+  
+  emotionalHTML += '</div></div>';
+  
+  // Color-by-color breakdown
+  emotionalHTML += `<div style="margin-top:16px">
+    <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Color Emotions</div>
+    <div class="color-emotions">
+  `;
+  
+  profiles.forEach((profile, idx) => {
+    const color = colors[idx];
+    emotionalHTML += `
+      <div class="emotion-color-item">
+        <div class="emotion-color-swatch" style="background:${color}"></div>
+        <div class="emotion-color-info">
+          <div class="emotion-color-hex">${color.toUpperCase()}</div>
+          <div class="emotion-color-words">${profile.descriptor}</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px">${profile.emotions.slice(0, 3).join(', ')}</div>
+        </div>
+      </div>
+    `;
+  });
+  
+  emotionalHTML += '</div></div>';
+  
+  document.getElementById('emotionalAnalysis').innerHTML = emotionalHTML;
 }
 
 // Init
