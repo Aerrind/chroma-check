@@ -1,0 +1,6 @@
+Contact: security@emotion-check.com
+Expires: 2026-12-31T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://emotion-check.com/.well-known/security.txt
+Policy: https://emotion-check.com/security-policy
+Acknowledgments: https://emotion-check.com/security-acknowledgments

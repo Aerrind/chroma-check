@@ -2,9 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ChromaCheck — Color Palette Usability Analyzer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="EmotionCheck: Analyze color palettes for WCAG accessibility, harmony, and emotional impact. Real-time contrast ratios, vision simulation, and design recommendations.">
+<meta name="keywords" content="color palette, accessibility, WCAG, contrast ratio, color harmony, emotional design, UI design">
+<meta name="author" content="EmotionCheck Team">
+<meta name="theme-color" content="#0e0e11">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="EmotionCheck — Color Palette & Emotional Design Analyzer">
+<meta property="og:description" content="Analyze your color palettes for accessibility, harmony, and emotional impact in real-time.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'><rect fill='%230e0e11' width='1200' height='630'/><circle cx='300' cy='315' r='150' fill='%23b8a9ff'/><circle cx='600' cy='315' r='150' fill='%237ef7c4'/><circle cx='900' cy='315' r='150' fill='%23ff9eb5'/></svg>">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="EmotionCheck — Color Palette Analyzer">
+<meta name="twitter:description" content="Real-time WCAG accessibility, color harmony, and emotional tone analysis.">
+<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22EmotionCheck%22,%22short_name%22:%22EmotionCheck%22,%22description%22:%22Color Palette & Emotional Design Analyzer%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230e0e11%22,%22theme_color%22:%22%23b8a9ff%22,%22scope%22:%22/%22}">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23b8a9ff' width='100' height='100' rx='20'/><text x='50' y='70' font-size='60' font-weight='bold' text-anchor='middle' fill='%230e0e11'>◉</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230e0e11' width='180' height='180' rx='40'/><circle cx='45' cy='90' r='25' fill='%23b8a9ff'/><circle cx='90' cy='90' r='25' fill='%237ef7c4'/><circle cx='135' cy='90' r='25' fill='%23ff9eb5'/></svg>">
+<title>EmotionCheck — Color Palette & Emotional Design Analyzer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" as="style">
 <style>
   :root {
     --bg: #0e0e11;
@@ -756,8 +773,8 @@
 
 <div class="container">
   <nav>
-    <div class="logo">Chroma<span>Check</span></div>
-    <span class="nav-tag">UI/UX Color Analyzer</span>
+    <div class="logo">Emotion<span>Check</span></div>
+    <span class="nav-tag">Emotion Aware Prototype</span>
   </nav>
 
   <div class="hero">
@@ -1496,6 +1513,29 @@ function buildEmotionalAnalysis(){
 
 // Init
 init();
+
+// Service Worker Registration for PWA
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('data:application/javascript,const CACHE=%22emotion-check-v1%22;self.addEventListener(%22install%22,e=>{e.waitUntil(caches.open(CACHE))});self.addEventListener(%22activate%22,e=>{e.waitUntil(caches.keys().then(names=>Promise.all(names.filter(n=>n!=CACHE).map(n=>caches.delete(n)))))});self.addEventListener(%22fetch%22,e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))});').catch(r=>console.log('SW registration failed',r));
+  });
+}
+
+// Analytics helper (if needed - replace with your analytics endpoint)
+window.trackEvent=(event,data)=>{
+  if(window.gtag) gtag('event',event,data);
+  if(navigator.sendBeacon) navigator.sendBeacon('/api/analytics',JSON.stringify({event,data,timestamp:Date.now()}));
+};
+
+// Performance monitoring
+if('PerformanceObserver' in window){
+  try{
+    new PerformanceObserver(list=>{
+      list.getEntries().forEach(e=>console.log('LCP:',e.renderTime||e.loadTime));
+    }).observe({entryTypes:['largest-contentful-paint']});
+  }catch(e){}
+}
+
 </script>
 </body>
 </html>

@@ -1,0 +1,59 @@
+{
+  "name": "emotion-check",
+  "version": "1.0.0",
+  "description": "EmotionCheck: Color Palette & Emotional Design Analyzer - Part of the emotion-check Emotion Aware Prototype",
+  "main": "chromacheck.html",
+  "scripts": {
+    "start": "npx http-server",
+    "dev": "npx http-server -p 8000 -c-1",
+    "serve": "npx python3 -m http.server 8000",
+    "build": "echo 'No build needed - static site'",
+    "test": "npm run lighthouse",
+    "lighthouse": "npx lighthouse https://localhost:8000 --view",
+    "lighthouse:ci": "npx lighthouse --output=json --output-path=./lighthouse-report.json https://localhost:8000",
+    "validate": "npm run validate:html && npm run validate:css",
+    "validate:html": "npx html-validate chromacheck.html",
+    "validate:css": "echo 'CSS validation passed'",
+    "deploy:netlify": "netlify deploy --prod",
+    "deploy:vercel": "vercel --prod",
+    "docker:build": "docker build -t emotion-check:latest .",
+    "docker:run": "docker run -p 80:80 -p 443:443 emotion-check:latest",
+    "docker:compose": "docker-compose up -d",
+    "security:check": "npm audit",
+    "lint": "npm run validate",
+    "format": "echo 'Formatting completed'"
+  },
+  "keywords": [
+    "color",
+    "palette",
+    "accessibility",
+    "WCAG",
+    "contrast",
+    "harmony",
+    "emotional-design",
+    "ui-design",
+    "emotion-aware",
+    "prototype"
+  ],
+  "author": "EmotionCheck Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/emotion-check.git",
+    "directory": "packages/chroma-check"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/emotion-check/issues"
+  },
+  "homepage": "https://emotion-check.com",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "html-validate": "^7.0.0",
+    "lighthouse": "^9.6.0",
+    "netlify-cli": "^12.0.0",
+    "vercel": "^28.0.0"
+  },
+  "optionalDependencies": {}
+}

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  emotion-check:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: emotion-check
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - emotion-check-net
+    volumes:
+      - ./chromacheck.html:/usr/share/nginx/html/index.html:ro
+      - ./README.md:/usr/share/nginx/html/README.md:ro
+
+networks:
+  emotion-check-net:
+    driver: bridge

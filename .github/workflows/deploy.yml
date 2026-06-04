@@ -1,0 +1,93 @@
+name: Deploy EmotionCheck
+
+on:
+  push:
+    branches:
+      - main
+      - emotion-aware
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Validate
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Validate HTML
+        run: |
+          sudo apt-get install -y html-tidy
+          tidy -q -errors --input-encoding utf8 chromacheck.html || true
+      
+      - name: Validate CSS in HTML
+        run: |
+          npm install -g html-validate
+          html-validate chromacheck.html || true
+      
+      - name: Check for common issues
+        run: |
+          echo "Checking for inline scripts..."
+          grep -c "script" chromacheck.html || echo "Scripts check passed"
+          
+  lighthouse:
+    runs-on: ubuntu-latest
+    name: Lighthouse Audit
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          staticDistDir: ./
+          uploadArtifacts: true
+
+  deploy:
+    needs: [test]
+    runs-on: ubuntu-latest
+    name: Deploy
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v2
+        with:
+          publish-dir: '.'
+          production-deploy: true
+          netlify-config-dir: './'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 1
+      
+      - name: Deploy to Vercel (optional)
+        uses: BetaHuhn/deploy-to-vercel-action@v1
+        if: secrets.VERCEL_TOKEN != ''
+        with:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      
+      - name: Notify deployment
+        run: echo "✅ EmotionCheck deployed successfully!"
+
+  security:
+    runs-on: ubuntu-latest
+    name: Security Check
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Run Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'

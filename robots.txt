@@ -1,0 +1,20 @@
+# EmotionCheck robots.txt
+# https://www.robotstxt.org/
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: *.json$
+
+# Specific search engine rules
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+# Sitemap
+Sitemap: https://emotion-check.com/sitemap.xml
