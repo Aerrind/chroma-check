@@ -1,13 +1,16 @@
-# ChromaCheck — Color Palette Usability Analyzer
+# EmotionCheck — Color Palette Analysis & Emotional Design Tool
 
-A real-time, interactive tool for analyzing and validating color palettes against WCAG accessibility standards, color harmony principles, and practical UI design needs.
+Part of the **emotion-check** repository — an Emotion Aware Prototype for understanding how colors impact user perception and emotional response.
+
+A real-time, interactive tool for analyzing and validating color palettes against WCAG accessibility standards, color harmony principles, emotional design principles, and practical UI design needs.
 
 ## Features
 
 ### 🎨 Comprehensive Palette Analysis
 - **Contrast Matrix**: Automatically calculates WCAG contrast ratios for all color combinations
 - **Color Harmony Detection**: Identifies complementary, analogous, triadic, and warm/cool color relationships
-- **Accessibility Scoring**: Get an A+ to D grade based on contrast, harmony, and visual balance
+- **Emotional Response Scoring**: Evaluate color psychology and emotional impact (part of the Emotion Aware Prototype)
+- **Accessibility Scoring**: Get an A+ to D grade based on contrast, harmony, visual balance, and emotional coherence
 - **Live UI Preview**: See your palette in action with a sample website interface
 - **Vision Simulation**: Test how your palette appears to people with different types of color blindness (Deuteranopia, Protanopia, Tritanopia)
 
@@ -35,12 +38,19 @@ Get actionable suggestions including:
 
 ## Getting Started
 
+### Prerequisites
+Ensure you're on the correct branch of the **emotion-check** repository:
+```
+git clone https://github.com/[your-org]/emotion-check.git
+git checkout [emotion-aware-branch]
+```
+
 ### Installation
 No installation required! This is a standalone HTML file.
 
-1. **Download** `chromacheck.html`
-2. **Open** in any modern web browser (Chrome, Firefox, Safari, Edge)
-3. **Start analyzing** your color palettes
+1. **Navigate** to the `chroma-check` folder in the emotion-check repository
+2. **Open** `chromacheck.html` in any modern web browser (Chrome, Firefox, Safari, Edge)
+3. **Start analyzing** your color palettes for emotional impact and accessibility
 
 ### Usage
 
@@ -72,9 +82,19 @@ Switch between vision modes to understand how color-blind users perceive your pa
 - **Protanopia**: Red-green color blindness variant
 - **Tritanopia**: Blue-yellow color blindness
 
+## About the Emotion Aware Prototype
+
+This tool is part of the **emotion-check** project, which explores how design choices—particularly color—influence user emotions and perception. The scoring system integrates:
+
+- **Technical accessibility** (WCAG compliance)
+- **Color harmony** (aesthetic coherence)
+- **Emotional signaling** (psychological color associations)
+
+Use this tool to understand not just *if* your palette works, but *how it makes people feel*.
+
 ## Understanding Your Score
 
-ChromaCheck grades your palette on a 100-point scale:
+EmotionCheck grades your palette on a 100-point scale:
 
 | Grade | Score | Assessment |
 |-------|-------|------------|
@@ -86,8 +106,8 @@ ChromaCheck grades your palette on a 100-point scale:
 
 ### Score Breakdown
 - **Contrast (40 pts)**: Percentage of color pairs passing WCAG AA (4.5:1 ratio)
-- **Color Harmony (30 pts)**: Hue diversity and relationship strength
-- **Visual Balance (30 pts)**: Saturation variation and overall composition
+- **Color Harmony (30 pts)**: Hue diversity, relationship strength, and emotional coherence
+- **Visual Balance (30 pts)**: Saturation variation, brightness distribution, and emotional tone consistency
 
 ## WCAG Compliance
 
@@ -128,8 +148,9 @@ Works on all modern browsers:
 ## Technical Details
 
 - **No external dependencies**: Pure HTML, CSS, and vanilla JavaScript
+- **Emotion Aware Engine**: Integrates color psychology principles with accessibility metrics
 - **Fast analysis**: All calculations run locally in your browser
-- **No data collection**: Your colors are never sent to a server
+- **No data collection**: Your colors and emotional responses are never sent to a server
 - **Responsive design**: Works on desktop, tablet, and mobile
 
 ### Color Science
@@ -157,15 +178,16 @@ Potential enhancements:
 
 ## License
 
-This tool is provided as-is for educational and professional use.
+This tool is provided as part of the **emotion-check** project for educational and professional use.
 
 ## Feedback & Issues
 
-Found a bug or have a suggestion? Feel free to reach out with detailed descriptions of:
+Found a bug or have a suggestion? Please file an issue in the emotion-check repository with detailed descriptions of:
 - What you were trying to do
+- What emotional response or design goal you had
 - What you expected
 - What happened instead
 
 ---
 
-**Happy color analyzing! 🎨**
+**Happy color analyzing and emotion prototyping! 🎨💭**
